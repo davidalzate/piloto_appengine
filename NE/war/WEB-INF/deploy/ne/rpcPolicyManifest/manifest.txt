@@ -1,0 +1,3 @@
+# Module ne
+# RPC service class, partial path of RPC policy file
+co.com.nuevaera.client.NEService, 7850AE22B0C11DB267F864EA797BD56A.gwt.rpc
