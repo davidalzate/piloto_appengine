@@ -6,8 +6,11 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 import co.com.nuevaera.client.dto.CategoriaDto;
+import co.com.nuevaera.client.dto.UsuarioDto;
 import co.com.nuevaera.model.NuevaEraPersistCtrl;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 
 public class CategoryResource extends ServerResource {
@@ -16,13 +19,19 @@ public class CategoryResource extends ServerResource {
 	public String handleGet() {
 		String rep = null;
 		try {
-			String idRestaurante = getQuery().getValues("idRestaurante");
+			NuevaEraPersistCtrl persistCtrl = new NuevaEraPersistCtrl();
+			ArrayList<UsuarioDto> userList = persistCtrl.getUsuarios();
+			
+			//String idRestaurante = getQuery().getValues("idRestaurante");
+			UserService userService = UserServiceFactory.getUserService();
+			String user = userService.getCurrentUser().getEmail();
+			Long idRestaurante = persistCtrl.getUsuario(user).getIdRestaurante();
 
 			if (null != idRestaurante) {
 
 
-				NuevaEraPersistCtrl persistCtrl = new NuevaEraPersistCtrl();
-				ArrayList<CategoriaDto> elementos = persistCtrl.getCategorias(new Long(idRestaurante), false);
+				
+				ArrayList<CategoriaDto> elementos = persistCtrl.getCategorias(idRestaurante, false);
 				
 				Gson gson = new Gson();
 				rep  = gson.toJson(elementos);

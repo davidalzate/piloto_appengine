@@ -28,7 +28,15 @@ public class IdentityResource extends ServerResource {
 	@Get("json")
 	public String handleGet() {
 		String resp = new String();
-		try {			
+		NuevaEraPersistCtrl persistCtrl  = new NuevaEraPersistCtrl();
+		//String idParam = getQuery().getValues("id");
+		//Long idRestaurante = new Long(idParam);
+		
+		UserService userService = UserServiceFactory.getUserService();
+		String user = userService.getCurrentUser().getEmail();
+		Long idRestaurante = persistCtrl.getUsuario(user).getIdRestaurante();
+		
+		/*try {			
 			if(null!=getQuery().getValues("populate")){
 				if(getQuery().getValues("populate").equalsIgnoreCase("yes")){
 					populateTest();					
@@ -44,9 +52,14 @@ public class IdentityResource extends ServerResource {
 				json.put("name", "value");
 				
 				
-				Long idRestaurante = new Long(idParam); 
+				Long idRestaurante = new Long(idParam); */
 				
 				RestauranteDto restauranteDto = persistCtrl.getRestaurante(idRestaurante, false);
+				ArrayList<RestauranteDto> restauranteDtos = new ArrayList<RestauranteDto>();
+				restauranteDtos.add(restauranteDto);
+				Gson  gson = new Gson();
+				resp = gson.toJson(restauranteDtos);
+				/*
 				if(null!=restauranteDto){
 					json.put("name", restauranteDto.getNombre());
 					json.put("banner", restauranteDto.getBanner());
@@ -64,7 +77,7 @@ public class IdentityResource extends ServerResource {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		return resp;
 	}
 	
