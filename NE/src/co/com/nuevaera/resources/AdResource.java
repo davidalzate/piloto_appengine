@@ -9,10 +9,13 @@ import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
 import co.com.nuevaera.client.dto.AnuncioDto;
+import co.com.nuevaera.client.dto.UsuarioDto;
 import co.com.nuevaera.client.dto.ViewDto;
 import co.com.nuevaera.context.AppContextAware;
 import co.com.nuevaera.model.NuevaEraPersistCtrl;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.gson.Gson;
 
 public class AdResource extends ServerResource {
@@ -23,17 +26,24 @@ public class AdResource extends ServerResource {
 	public String handleGet() {
 		String rep = null;
 		try {
-			String idRestaurante = getQuery().getValues("idRestaurante");
+			
+			NuevaEraPersistCtrl persistCtrl = new NuevaEraPersistCtrl();
+			ArrayList<UsuarioDto> userList = persistCtrl.getUsuarios();
+			
+			//String idRestaurante = getQuery().getValues("idRestaurante");
+			
+			UserService userService = UserServiceFactory.getUserService();
+			String user = userService.getCurrentUser().getEmail();
+			Long idRestaurante = persistCtrl.getUsuario(user).getIdRestaurante();
 
 			if (null != idRestaurante) {
 
 				String propiedad = getQuery().getValues("propiedad");
 				
 				AppContextAware appContextAware = new AppContextAware();
-				appContextAware.setIdRestaurante(new Long(idRestaurante));
+				appContextAware.setIdRestaurante(idRestaurante);
 				appContextAware.setPropiedad(propiedad);
 				
-				NuevaEraPersistCtrl persistCtrl = new NuevaEraPersistCtrl();
 				ArrayList<AnuncioDto> elementos = persistCtrl.getAnuncios(appContextAware);
 				Gson gson = new Gson();
 				rep  = gson.toJson(elementos);
